@@ -32,7 +32,12 @@ int main() {
             } else {
                 int splitPos = findSplitPos(line);
                 if (splitPos == -1) {
-                    //оформить перенос
+                    char lastChar = line[LINE_MAX_LENGTH - 1];
+                    line[LINE_MAX_LENGTH - 1] = '-';
+                    printLine(line, LINE_MAX_LENGTH, NEW_LINE);
+                    line[0] = lastChar;
+                    line[1] = c;
+                    charCount = 2;
                 } else {
                     printLine(line, splitPos + 1, NEW_LINE);
                     charCount = removeChars(line, splitPos);
