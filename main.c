@@ -16,25 +16,29 @@ int main () {
     int i = 0;
 
     while ((c = getchar()) != EOF) {
-        if (c == '\n') {
-            line[charCount] = c;
+        if (c == '\n' || ((c == '\t' || c == ' ') && charCount == LINE_MAX_LENGTH)) {
+            line[charCount] = '\n';
             line[++charCount] = '\0';
             printf("%s", line);
             charCount = 0;
-        }
-        else if (charCount < LINE_MAX_LENGTH) {
+        } else if (charCount < LINE_MAX_LENGTH) {
             line[charCount++] = c;
-        }
-        else {
-            for (lastSpacePos = charCount - 1; !charEmpty(line[lastSpacePos]); --lastSpacePos);
-            for (lastCharPos = lastSpacePos; charEmpty(line[lastCharPos]); --lastCharPos);
-            line[lastCharPos+1] = '\0';
-            printf("%s\n", line);
-
-            for (i = 0; i < LINE_MAX_LENGTH - lastSpacePos - 1; ++i)
-                line[i] = line[lastSpacePos + i + 1];
-            charCount = i;
-            line[charCount++] = c;
+        } else {
+            for (lastSpacePos = charCount - 1; !charEmpty(line[lastSpacePos]) && lastSpacePos >= 0; --lastSpacePos);
+            if (lastSpacePos == -1) {//no spaces in line
+                line[charCount] = '\0';
+                printf("%s\n", line);
+                line[0] = c;
+                charCount = 1;
+            } else {
+                for (lastCharPos = lastSpacePos; charEmpty(line[lastCharPos] && lastCharPos >= 0); --lastCharPos);
+                line[lastCharPos + 1] = '\0';
+                printf("%s\n", line);
+                for (i = 0; i < LINE_MAX_LENGTH - lastSpacePos - 1; ++i)
+                    line[i] = line[lastSpacePos + i + 1];
+                charCount = i;
+                line[charCount++] = c;
+            }
         }
     }
     line[charCount] = '\0';
