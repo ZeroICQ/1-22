@@ -12,7 +12,7 @@ int main () {
     char line[LINE_MAX_LENGTH + 1];
     char c;
     int charCount = 0;
-    int firstCharPos, firstSpacePos;
+    int lastCharPos, lastSpacePos;
     int i = 0;
 
     while ((c = getchar()) != EOF) {
@@ -26,13 +26,13 @@ int main () {
             line[charCount++] = c;
         }
         else {
-            for (firstSpacePos = charCount - 1; !charEmpty(line[firstSpacePos]); --firstSpacePos);
-            for (firstCharPos = firstSpacePos; charEmpty(line[firstCharPos]); --firstCharPos);
-            line[firstCharPos+1] = '\0';
+            for (lastSpacePos = charCount - 1; !charEmpty(line[lastSpacePos]); --lastSpacePos);
+            for (lastCharPos = lastSpacePos; charEmpty(line[lastCharPos]); --lastCharPos);
+            line[lastCharPos+1] = '\0';
             printf("%s\n", line);
 
-            for (i = 0; i < LINE_MAX_LENGTH - firstSpacePos - 1; ++i)
-                line[i] = line[firstSpacePos + i + 1];
+            for (i = 0; i < LINE_MAX_LENGTH - lastSpacePos - 1; ++i)
+                line[i] = line[lastSpacePos + i + 1];
             charCount = i;
             line[charCount++] = c;
         }
