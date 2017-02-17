@@ -3,92 +3,41 @@
 #include <stdbool.h>
 
 #define LINE_MAX_LENGTH 5
-#define NEW_LINE '\n'
-#define END_LINE '\0'
 
-void printLine(char line[], int charNumber, char lineDelimeter);
-int findSplitPos(char line[]);
-bool CharEmpty(char c);
-int removeChars(char line[], int pos);
+bool charEmpty(char c) {
+    return (c == '\t' || c == ' ');
+}
 
-int main() {
-    char line[LINE_MAX_LENGTH];
+int main () {
+    char line[LINE_MAX_LENGTH + 1];
     char c;
     int charCount = 0;
-    bool isPassEmptyChars = false;
+    int firstCharPos, firstSpacePos;
+    int i = 0;
 
-    do {
-        c = getchar();
-        if (c == '\n' && !isPassEmptyChars) {
-            printLine(line, charCount, NEW_LINE);
+    while ((c = getchar()) != EOF) {
+        if (c == '\n') {
+            line[charCount] = c;
+            line[++charCount] = '\0';
+            printf("%s", line);
             charCount = 0;
-        } else if (c == EOF) {
-            printLine(line, charCount, END_LINE);
-        } else if (charCount == LINE_MAX_LENGTH) {
-            if (c == ' ' || c == '\n' || c == '\t') {
-                printLine(line, charCount, NEW_LINE);
-                isPassEmptyChars = true;
-                charCount = 0;
-            } else {
-                int splitPos = findSplitPos(line);
-                if (splitPos == -1) {
-                    char lastChar = line[LINE_MAX_LENGTH - 1];
-                    line[LINE_MAX_LENGTH - 1] = '-';
-                    printLine(line, LINE_MAX_LENGTH, NEW_LINE);
-                    line[0] = lastChar;
-                    line[1] = c;
-                    charCount = 2;
-                } else {
-                    printLine(line, splitPos + 1, NEW_LINE);
-                    charCount = removeChars(line, splitPos);
-                    line[++charCount] = c;
-                    ++charCount;
-                }
-            }
-        } else {
-            if (isPassEmptyChars) {
-                isPassEmptyChars = CharEmpty(c);
-                if (isPassEmptyChars)
-                    continue;
-            }
+        }
+        else if (charCount < LINE_MAX_LENGTH) {
             line[charCount++] = c;
         }
-    } while (c != EOF);
+        else {
+            for (firstSpacePos = charCount - 1; !charEmpty(line[firstSpacePos]); --firstSpacePos);
+            for (firstCharPos = firstSpacePos; charEmpty(line[firstCharPos]); --firstCharPos);
+            line[firstCharPos+1] = '\0';
+            printf("%s\n", line);
+
+            for (i = 0; i < LINE_MAX_LENGTH - firstSpacePos - 1; ++i)
+                line[i] = line[firstSpacePos + i + 1];
+            charCount = i;
+            line[charCount++] = c;
+        }
+    }
+    line[charCount] = '\0';
+    printf("%s\n", line);
     return EXIT_SUCCESS;
-}
-
-void printLine(char line[], int charNumber, char lineDelimeter) {
-    for (int i = 0; i < charNumber; ++i) {
-        putchar(line[i]);
-    }
-    if (lineDelimeter != END_LINE)
-        putchar(lineDelimeter);
-}
-
-int findSplitPos(char line[]) {
-    bool isEmptyCharFound = false;
-    for (int i = LINE_MAX_LENGTH - 1; i >= 0; --i) {
-        if (!isEmptyCharFound)
-            isEmptyCharFound = CharEmpty(line[i]);
-        else if (!CharEmpty(line[i]))
-            return ++i;
-    }
-    return -1;
-}
-
-bool CharEmpty(char c) {
-    return c == ' ' || c == '\t';
-}
-
-
-int removeChars(char line[], int pos) {
-    int j = -1;
-    bool isStrip = true;
-    for (int i = pos + 1; i < LINE_MAX_LENGTH; ++i) {
-        if (isStrip && !CharEmpty(line[i]))
-            isStrip = false;
-        if (!isStrip)
-            line[++j] = line[i];
-    }
-    return j;
 }
